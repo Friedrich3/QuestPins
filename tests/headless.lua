@@ -267,6 +267,9 @@ local function Check(cond, msg)
 end
 
 
+Check(QuestPinsDB.showTurnIn == false, "turn-in '?' markers off by default")
+Check(QuestPinsDB.showObjectives == false, "objective areas off by default")
+
 if persona.faction == "Horde" then
     -- Fresh level 1 orc in Durotar (Valley of Trials).
     ShowMap(1411)
@@ -303,12 +306,19 @@ if persona.faction == "Horde" then
     Fire("QUEST_ACCEPTED", 788)
     Pump()
     ShowMap(1411)
-    icons = Summary("Durotar after accepting 788")
+    icons = Summary("Durotar after accepting 788 (defaults)")
+    Check(not GiverOffers(4641), "completed quest 4641 no longer offered")
+    Check((icons.slay or 0) == 0, "no objective areas with default settings")
+    SlashCmdList.QUESTPINS("objectives")
+    SlashCmdList.QUESTPINS("turnin")
+    Pump()
+    ShowMap(1411)
+    icons = Summary("Durotar after accepting 788 (objectives + turnin on)")
     Check((icons.slay or 0) > 0, "kill objective areas for Mottled Boar drawn")
     tip = TooltipFor(function(d) return d.kind == "objective" end)
     print("  tooltip: " .. tostring(tip))
     Check(tip and tip:find("Cutting Teeth", 1, true) and tip:find("Mottled Boar", 1, true), "objective tooltip shows quest and target")
-    Check((icons.complete or 0) == 0, "no turn-in '?' while 788 is incomplete (default settings)")
+    Check((icons.complete or 0) == 0, "no turn-in '?' while 788 is incomplete (incomplete turn-ins off)")
     tipAll = {}
     for _, pin in ipairs(pins) do pin:OnMouseEnter() tipAll[#tipAll + 1] = table.concat(tooltipLines, " | ") end
     all = table.concat(tipAll, "\n")
@@ -339,6 +349,14 @@ if persona.faction == "Horde" then
     icons = Summary("Durotar after turning in 788")
     Check(GiverOffers(789), "'Sting of the Scorpid' (789) offered after 788 is turned in")
     Check((icons.complete or 0) == 0, "turn-in marker gone after turn-in")
+
+    -- Completed without QUEST_TURNED_IN (e.g. flagged by the server): resynced on the next rebuild.
+    completed[789] = true
+    Fire("QUEST_REMOVED", 9999)
+    Pump()
+    ShowMap(1411)
+    Summary("Durotar after 789 silently completed")
+    Check(not GiverOffers(789), "quest completed without a turn-in event is hidden after resync")
 
     -- Continent view: givers shown smaller, objectives hidden by default.
     ShowMap(1414)
@@ -384,6 +402,22 @@ else
             print("  repeatable giver: " .. table.concat(tooltipLines, " | "))
         end
     end
+    -- A quest done before login is never offered.
+    local function OffersHuman(questId)
+        for _, pin in ipairs(pins) do
+            if pin.data.kind == "giver" then
+                for _, q in ipairs(pin.data.quests) do if q.questId == questId then return true end end
+            end
+        end
+        return false
+    end
+    Check(OffersHuman(783), "'A Threat Within' (783) offered at level 1")
+    completed[783] = true
+    Fire("QUEST_TURNED_IN", 783)
+    Pump()
+    ShowMap(1429)
+    Summary("Elwynn after completing 783")
+    Check(not OffersHuman(783), "completed quest 783 no longer offered")
     ShowMap(1411)
     icons = Summary("Durotar as human")
     Check((icons.available or 0) == 0, "no Horde quest givers for an Alliance character")

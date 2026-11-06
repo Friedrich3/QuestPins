@@ -11,9 +11,9 @@ local REQUIRED_CONTRACT = 4
 local defaults = {
     enabled = true,
     showAvailable = true,      -- yellow "!" at quest givers
-    showTurnIn = true,         -- yellow "?" at quest enders of completed quests
+    showTurnIn = false,        -- yellow "?" at quest enders of completed quests
     showIncompleteTurnIn = false, -- grey "?" at quest enders of quests still in progress
-    showObjectives = true,     -- objective areas of quests in the log
+    showObjectives = false,    -- objective areas of quests in the log
     showTrivial = false,       -- grey "!" for low-level quests
     showRepeatable = true,     -- blue "!" for repeatable quests
     continentAvailable = true, -- quest givers / turn-ins on continent maps
@@ -87,6 +87,7 @@ local function RebuildActive()
     end
     activeDirty = false
     activeRunning = true
+    ns.Player:RefreshCompleted()
     ns.Player:ReadQuestLog()
     ns.generation = ns.generation + 1
     ns.RunJob("objectives", function()
