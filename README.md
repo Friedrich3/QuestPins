@@ -3,8 +3,10 @@
 Questie-style quest markers for **World of Warcraft: Forever**. Only on the world map, nothing else.
 
 - **Yellow `!`**: quests you can pick up now (blue `!` = repeatable, grey `!` = low level, off by default)
-- **Yellow `?`**: where to turn in quests you have completed
-- **Objective icons**: where to kill (sword), loot (bag), use objects (gears) or explore (dot) for quests in your log. Finished objectives disappear.
+- **Yellow `?`**: where to turn in quests you have completed (off by default, `/qpins turnin`)
+- **Objective icons**: where to kill (sword), loot (bag), use objects (gears) or explore (dot) for quests in your log. Finished objectives disappear. (Off by default, `/qpins objectives`.)
+
+Quests you have already completed never get a marker.
 - **Small tooltip** on hover: the NPC/object name and the quest name(s) with level, or the objective with its progress.
 
 It does **not** add a quest tracker, change Blizzard's objective tracker, track or untrack quests, add minimap icons, change tooltips or automate anything. It only adds markers to the world map.
@@ -28,9 +30,9 @@ Extract the zip so the folder is `World of Warcraft\_forever_\Interface\AddOns\Q
 | --- | --- | --- |
 | `/qpins toggle` | all markers | on |
 | `/qpins available` | quests you can pick up | on |
-| `/qpins turnin` | turn-ins of completed quests | on |
+| `/qpins turnin` | turn-ins of completed quests | off |
 | `/qpins incomplete` | turn-ins of quests still in progress (grey `?`) | off |
-| `/qpins objectives` | objective areas | on |
+| `/qpins objectives` | objective areas | off |
 | `/qpins trivial` | low-level (grey) quests | off |
 | `/qpins repeatable` | repeatable quests | on |
 | `/qpins continent` | quest givers and turn-ins on continent maps | on |

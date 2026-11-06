@@ -21,17 +21,31 @@ function Player:Initialize()
     local faction = UnitFactionGroup("player")
     self.factionLetter = faction == "Alliance" and "A" or faction == "Horde" and "H" or nil
 
-    wipe(self.completed)
-    if C_QuestLog.GetAllCompletedQuestIDs then
-        for _, questId in ipairs(C_QuestLog.GetAllCompletedQuestIDs() or {}) do
-            self.completed[questId] = true
-        end
-    elseif GetQuestsCompleted then
-        for questId in pairs(GetQuestsCompleted() or {}) do
-            self.completed[questId] = true
-        end
-    end
+    self:RefreshCompleted()
     self:InvalidateCaches()
+end
+
+-- Re-reads the server's list of completed quests. Called at login and on every quest-log
+-- rebuild, so quests flagged done without a QUEST_TURNED_IN (breadcrumbs, exclusive alternatives,
+-- quests finished before the list was available at login) also lose their map marker.
+---@return boolean changed true when the set of completed quests differs from before
+function Player:RefreshCompleted()
+    local fresh = {}
+    if C_QuestLog.GetAllCompletedQuestIDs then
+        for _, questId in ipairs(C_QuestLog.GetAllCompletedQuestIDs() or {}) do fresh[questId] = true end
+    elseif GetQuestsCompleted then
+        for questId in pairs(GetQuestsCompleted() or {}) do fresh[questId] = true end
+    else
+        return false
+    end
+    local changed = false
+    for questId in pairs(fresh) do
+        if not self.completed[questId] then changed = true end
+    end
+    -- Keep quests recorded via QUEST_TURNED_IN that the server list may not include yet.
+    for questId in pairs(self.completed) do fresh[questId] = true end
+    self.completed = fresh
+    return changed
 end
 
 function Player:SetCompleted(questId)
