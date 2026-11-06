@@ -1,0 +1,19 @@
+## Interface: 16001
+## Title: QuestPins
+## Notes: Questie-style quest markers on the world map only: available quests, turn-ins and objectives. No tracker, no minimap. Requires QuestieDB.
+## Notes-itIT: Segnalini delle missioni in stile Questie solo sulla mappa del mondo: missioni disponibili, consegne e obiettivi. Nessun tracker, nessuna minimappa. Richiede QuestieDB.
+## Author: Federico
+## Version: 1.0.0
+## Category: Quests
+## Category-itIT: Missioni
+## Dependencies: QuestieDB
+## SavedVariables: QuestPinsDB
+## X-QuestieDB-Contract: 4
+## X-License: GPL-3.0-or-later
+
+Data\Blacklist.lua
+Core.lua
+Zones.lua
+Player.lua
+Quests.lua
+MapPins.lua
